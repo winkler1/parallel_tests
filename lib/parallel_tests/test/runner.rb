@@ -72,7 +72,8 @@ module ParallelTests
         def execute_command(cmd, process_number, num_processes, options)
           env = (options[:env] || {}).merge(
             "TEST_ENV_NUMBER" => test_env_number(process_number),
-            "PARALLEL_TEST_GROUPS" => num_processes
+            "PARALLEL_TEST_GROUPS" => num_processes,
+            "DATABASE_NAME_TEST" => "test_db#{process_number}"
           )
           cmd = "nice #{cmd}" if options[:nice]
           cmd = "#{cmd} 2>&1" if options[:combine_stderr]
@@ -82,6 +83,7 @@ module ParallelTests
         end
 
         def execute_command_and_capture_output(env, cmd, silence)
+          puts "execute_command_and_capture_output cmd #{cmd}, #{env.to_s}"
           # make processes descriptive / visible in ps -ef
           separator = (WINDOWS ? ' & ' : ';')
           exports = env.map do |k,v|
